@@ -1,74 +1,101 @@
-create DATABASE projeto_magia;
-use projeto_magia;
+-- Cria o banco de dados projeto_magia com conjunto de caracteres e collation UTF-8
+CREATE DATABASE projeto_magia
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_0900_ai_ci;
 
+-- Seleciona o banco de dados projeto_magia
+USE projeto_magia;
+
+-- Tabela Usuario: armazena informações dos usuários do sistema
 CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255),
-    email VARCHAR(180) UNIQUE,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(180) UNIQUE NOT NULL,
     telefone VARCHAR(15),
-    tipo_usuario VARCHAR(20),
+    tipo_usuario VARCHAR(20) NOT NULL,
     id_crianca INT,
-    id_responsavel INT
-);
+    id_responsavel INT,
+    INDEX (nome), -- Adiciona índice na coluna nome
+    INDEX (email), -- Adiciona índice na coluna email
+    INDEX (tipo_usuario) -- Adiciona índice na coluna tipo_usuario
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Adiciona a restrição CHECK para validar o tipo de usuário
 ALTER TABLE Usuario ADD CHECK (tipo_usuario IN ('padrinho', 'responsavel', 'administrador', 'outros'));
 
+-- Tabela Apadrinhamento: armazena informações sobre os apadrinhamentos
 CREATE TABLE Apadrinhamento (
-    id_apadrinhamento INT PRIMARY KEY,
-    data_apadrinhamento DATETIME,
-    id_crianca INT,
-    id_padrinho INT,
-    id_datas_comemorativas INT
-);
+    id_apadrinhamento INT AUTO_INCREMENT PRIMARY KEY,
+    data_apadrinhamento DATETIME NOT NULL,
+    id_crianca INT NOT NULL,
+    id_padrinho INT NOT NULL,
+    id_datas_comemorativas INT NOT NULL,
+    INDEX (data_apadrinhamento) -- Adiciona índice na coluna data_apadrinhamento
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabela Crianca: armazena informações sobre as crianças
 CREATE TABLE Crianca (
-    id_crianca INT PRIMARY KEY,
-    nome VARCHAR(255),
-    data_nascimento DATE,
-    cpf VARCHAR(14) UNIQUE, -- Alterado para VARCHAR
+    id_crianca INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
     renda_familiar DECIMAL(10, 2),
     matricula_escolar VARCHAR(32),
     lista_brinquedos VARCHAR(255),
     id_escola INT,
-    id_responsavel INT
-);
+    id_responsavel INT,
+    INDEX (nome), -- Adiciona índice na coluna nome
+    INDEX (cpf) -- Adiciona índice na coluna cpf
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabela Padrinho: armazena informações sobre os padrinhos
 CREATE TABLE Padrinho (
-    id_padrinho INT PRIMARY KEY,
-    nome VARCHAR(255),
-    email VARCHAR(180) UNIQUE,
-    telefone VARCHAR(15)
-);
+    id_padrinho INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(180) UNIQUE NOT NULL,
+    telefone VARCHAR(15),
+    INDEX (nome), -- Adiciona índice na coluna nome
+    INDEX (email) -- Adiciona índice na coluna email
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabela Escola: armazena informações sobre as escolas
 CREATE TABLE Escola (
-    id_escola INT PRIMARY KEY,
-    nome VARCHAR(255),
+    id_escola INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
     endereco VARCHAR(255),
-    telefone VARCHAR(15)
-);
+    telefone VARCHAR(15),
+    INDEX (nome) -- Adiciona índice na coluna nome
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabela Responsavel: armazena informações sobre os responsáveis
 CREATE TABLE Responsavel (
-    id_responsavel INT PRIMARY KEY,
-    nome VARCHAR(255),
-    cpf VARCHAR(14) UNIQUE, -- Alterado para VARCHAR
-    telefone VARCHAR(15)
-);
+    id_responsavel INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    telefone VARCHAR(15),
+    INDEX (nome), -- Adiciona índice na coluna nome
+    INDEX (cpf) -- Adiciona índice na coluna cpf
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabela Datas_comemorativas: armazena informações sobre as datas comemorativas
 CREATE TABLE Datas_comemorativas (
-    id_datas_comemorativas INT PRIMARY KEY,
-    nome VARCHAR(255),
-    data DATE
-);
+    id_datas_comemorativas INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    data DATE NOT NULL,
+    INDEX (nome), -- Adiciona índice na coluna nome
+    INDEX (data) -- Adiciona índice na coluna data
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-ALTER TABLE Usuario ADD FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca);
-ALTER TABLE Usuario ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel);
-ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca);
-ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_padrinho) REFERENCES Padrinho(id_padrinho);
-ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_datas_comemorativas) REFERENCES Datas_comemorativas(id_datas_comemorativas);
-ALTER TABLE Crianca ADD FOREIGN KEY (id_escola) REFERENCES Escola(id_escola);
-ALTER TABLE Crianca ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel);
+-- Adiciona chaves estrangeiras com ON DELETE e ON UPDATE
+ALTER TABLE Usuario ADD FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE Usuario ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_padrinho) REFERENCES Padrinho(id_padrinho) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_datas_comemorativas) REFERENCES Datas_comemorativas(id_datas_comemorativas) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE Crianca ADD FOREIGN KEY (id_escola) REFERENCES Escola(id_escola) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE Crianca ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel) ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- Insere dados fictícios na tabela Usuario
 INSERT INTO Usuario (nome, email, telefone, tipo_usuario) VALUES
 ('Ana Silva', 'ana.silva@email.com', '(11) 91111-1111', 'padrinho'),
 ('Bruno Oliveira', 'bruno.oliveira@email.com', '(21) 92222-2222', 'responsavel'),
