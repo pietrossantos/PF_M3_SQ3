@@ -150,3 +150,8 @@ INSERT INTO Usuario (nome, email, telefone, tipo_usuario) VALUES
 ('Fabrício Brito', 'fabricio.brito@email.com', '(66) 95252-5252', 'administrador'),
 ('Giovanna Cunha', 'giovanna.cunha@email.com', '(76) 95353-5353', 'outros'),
 ('Hugo Farias', 'hugo.farias@email.com', '(86) 95454-5454', 'padrinho');
+SELECT * FROM usuario;
+
+-- Agrupa os usuarios a partir de seu tipo e diz a quantidade de cada tipo de usuario
+SELECT tipo_usuario, COUNT(tipo_usuario) AS quantidade_por_tipos_usuarios
+    FROM usuario GROUP BY tipo_usuario;
