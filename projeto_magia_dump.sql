@@ -275,3 +275,22 @@ SELECT p.nome AS nome_padrinho, COUNT(a.id_crianca) AS numero_criancas_apadrinha
 FROM Padrinho p
 LEFT JOIN Apadrinhamento a ON p.id_padrinho = a.id_padrinho
 GROUP BY p.nome;
+
+-- Contar o número de crianças por escola
+SELECT E.nome AS NomeEscola, COUNT(C.id_crianca) AS NumeroDeCriancas
+FROM Escola E
+LEFT JOIN Crianca C ON E.id_escola = C.id_escola
+GROUP BY E.nome;
+
+-- Listar todos os padrinhos que não apadrinharam crianças ainda
+SELECT P.nome AS NomePadrinho
+FROM Padrinho P
+LEFT JOIN Apadrinhamento A ON P.id_padrinho = A.id_padrinho
+WHERE A.id_padrinho IS NULL;
+
+--Listar apadrinhamentos realizados em um determinado período
+SELECT A.id_apadrinhamento, C.nome AS NomeCrianca, P.nome AS NomePadrinho, A.data_apadrinhamento
+FROM Apadrinhamento A
+JOIN Crianca C ON A.id_crianca = C.id_crianca
+JOIN Padrinho P ON A.id_padrinho = P.id_padrinho
+WHERE A.data_apadrinhamento BETWEEN '2025-01-01' AND '2025-12-31';
