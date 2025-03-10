@@ -256,3 +256,22 @@ SELECT Usuario.nome, Padrinho.telefone
 FROM Usuario
 JOIN Padrinho ON Usuario.id_padrinho = Padrinho.id_padrinho
 WHERE Usuario.tipo_usuario = 'padrinho';
+ -- Listar o nome das crianças e seus respectivos padrinhos
+ SELECT c.nome AS nome_crianca, p.nome AS nome_padrinho
+FROM  Crianca c
+JOIN Apadrinhamento a ON c.id_crianca = a.id_crianca
+JOIN Padrinho p ON a.id_padrinho = p.id_padrinho;
+-- Listar o nome das crianças e suas respectivas escolas
+SELECT c.nome AS nome_crianca, e.nome AS nome_escola
+FROM Crianca c
+JOIN Escola e ON c.id_escola = e.id_escola;
+-- Listar o nome de responsaveis e o número de crianças que cada um é responsavel
+SELECT r.nome AS nome_responsavel, COUNT(c.id_crianca) AS numero_criancas
+FROM Responsavel r
+LEFT JOIN Crianca c ON r.id_responsavel = c.id_responsavel
+GROUP BY r.nome; 
+-- Listar o nome dos padrinhos e o número de crianças que cada um apadrinha
+SELECT p.nome AS nome_padrinho, COUNT(a.id_crianca) AS numero_criancas_apadrinhadas
+FROM Padrinho p
+LEFT JOIN Apadrinhamento a ON p.id_padrinho = a.id_padrinho
+GROUP BY p.nome;
