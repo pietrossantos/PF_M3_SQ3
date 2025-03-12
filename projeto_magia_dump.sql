@@ -7,314 +7,172 @@ CREATE DATABASE projeto_magia
 USE projeto_magia;
 
 -- Tabela Usuario: armazena informações dos usuários do sistema
-CREATE TABLE Usuario (
+CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(180) UNIQUE NOT NULL,
+    nome VARCHAR(200) NOT NULL,
+    email VARCHAR(255) UNIQUE,
     telefone VARCHAR(15),
-    tipo_usuario VARCHAR(20) NOT NULL,
-    id_crianca INT,
-    id_responsavel INT,
-    INDEX (nome), -- Adiciona índice na coluna nome
-    INDEX (email), -- Adiciona índice na coluna email
-    INDEX (tipo_usuario) -- Adiciona índice na coluna tipo_usuario
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-ALTER TABLE Usuario
-ADD FOREIGN KEY (id_padrinho) REFERENCES Padrinho(id_padrinho);
-ALTER TABLE Usuario
-ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel);
-DESCRIBE Usuario;
--- Adiciona a restrição CHECK para validar o tipo de usuário
-ALTER TABLE Usuario ADD CHECK (tipo_usuario IN ('padrinho', 'responsavel', 'administrador', 'outros'));
+    cpf VARCHAR(14) NOT NULL,
+    idade INTEGER,
+    sexo VARCHAR(15)
+);
 
--- Tabela Apadrinhamento: armazena informações sobre os apadrinhamentos
-CREATE TABLE Apadrinhamento (
-    id_apadrinhamento INT AUTO_INCREMENT PRIMARY KEY,
-    data_apadrinhamento DATETIME NOT NULL,
-    id_crianca INT NOT NULL,
-    id_padrinho INT NOT NULL,
-    id_datas_comemorativas INT NOT NULL,
-    INDEX (data_apadrinhamento) -- Adiciona índice na coluna data_apadrinhamento
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Tabela Crianca: armazena informações sobre as crianças
-CREATE TABLE Crianca (
-    id_crianca INT AUTO_INCREMENT PRIMARY KEY,
+--Tabela padrinho: armazena informações dos padrinhos
+CREATE TABLE padrinho(
+    id_padrinho INT PRIMARY KEY,
+    renda_familiar DECIMAL(10,2),
+    FOREIGN KEY (id_padrinho) REFERENCES usuario(id_usuario)
+);
+
+--Tabela responsavel: armazena informações dos responsaveis
+CREATE TABLE responsavel (
+    id_responsavel INT PRIMARY KEY,
+    vinculo_crianca VARCHAR(50),
+    renda_familiar decimal(10,2),
+    FOREIGN KEY (id_responsavel) REFERENCES usuario(id_usuario)
+);
+
+--Tabela escola: armazena informações das escolas
+CREATE TABLE escola (
+    id_escola INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
-    data_nascimento DATE NOT NULL,
-    cpf CHAR(14) UNIQUE NOT NULL,
-    renda_familiar DECIMAL(10, 2),
-    matricula_escolar VARCHAR(32),
-    lista_brinquedos TEXT,
-    id_escola INT,
-    id_responsavel INT,
-    INDEX (nome), -- Adiciona índice na coluna nome
-    INDEX (cpf) -- Adiciona índice na coluna cpf
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-ALTER TABLE Crianca
-ADD UNIQUE (matricula_escolar);
-ALTER TABLE Crianca
-MODIFY COLUMN cpf CHAR(14) UNIQUE;
-ALTER TABLE Crianca
-MODIFY COLUMN lista_brinquedos TEXT; 
-
--- Tabela Padrinho: armazena informações sobre os padrinhos
-CREATE TABLE Padrinho (
-    id_padrinho INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(180) UNIQUE NOT NULL,
-    telefone VARCHAR(15),
-    INDEX (nome), -- Adiciona índice na coluna nome
-    INDEX (email) -- Adiciona índice na coluna email
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Tabela Escola: armazena informações sobre as escolas
-CREATE TABLE Escola (
-    id_escola INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255),
     endereco VARCHAR(255),
-    telefone VARCHAR(15),
-    INDEX (nome) -- Adiciona índice na coluna nome
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    cnpj VARCHAR(14) NOT NULL
+);
 
--- Tabela Responsavel: armazena informações sobre os responsáveis
-CREATE TABLE Responsavel (
-    id_responsavel INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    cpf CHAR(14) UNIQUE NOT NULL,
-    telefone VARCHAR(15),
-    INDEX (nome), -- Adiciona índice na coluna nome
-    INDEX (cpf) -- Adiciona índice na coluna cpf
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+--Tabela crianca: armazena informações das criancas
+CREATE TABLE crianca(
+    id_crianca INT PRIMARY KEY,
+    id_responsavel INTEGER NOT NULL,
+    id_escola INTEGER,
+    brinquedo_1 VARCHAR(100) NOT NULL,
+    brinquedo_2 VARCHAR(100),
+    brinquedo_3 VARCHAR(100),
+    matricula_escolar VARCHAR(32),
+    FOREIGN KEY (id_crianca) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_responsavel) REFERENCES responsavel(id_responsavel),
+    FOREIGN KEY (id_escola) REFERENCES escola(id_escola)
+);
 
-ALTER TABLE Responsavel
-MODIFY COLUMN cpf CHAR(14) UNIQUE;
--- Tabela Datas_comemorativas: armazena informações sobre as datas comemorativas
-CREATE TABLE Datas_comemorativas (
-    id_datas_comemorativas INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    data DATE NOT NULL,
-    INDEX (nome), -- Adiciona índice na coluna nome
-    INDEX (data) -- Adiciona índice na coluna data
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+--Tabela data_comemorativa: armazena informações das datas comemorativas
+CREATE TABLE data_comemorativa (
+    id_data_comemorativa INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(150) NOT NULL ,
+    data DATE NOT NULL
+);
 
--- Adiciona chaves estrangeiras com ON DELETE e ON UPDATE
-ALTER TABLE Usuario ADD FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca) ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE Usuario ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel) ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_padrinho) REFERENCES Padrinho(id_padrinho) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE Apadrinhamento ADD FOREIGN KEY (id_datas_comemorativas) REFERENCES Datas_comemorativas(id_datas_comemorativas) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE Crianca ADD FOREIGN KEY (id_escola) REFERENCES Escola(id_escola) ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE Crianca ADD FOREIGN KEY (id_responsavel) REFERENCES Responsavel(id_responsavel) ON DELETE SET NULL ON UPDATE CASCADE;
+--Tabela apadrinhamento: armazena informações dos apadrinhamento
+CREATE TABLE apadrinhamento (
+    id_apadrinhamento INT PRIMARY KEY AUTO_INCREMENT,
+    id_padrinho INT NOT NULL,
+    id_crianca INT NOT NULL,
+    id_data_comemorativa INT NOT NULL,
+    data_apadrinhamento DATETIME NOT NULL,
+    FOREIGN KEY (id_padrinho) REFERENCES padrinho(id_padrinho),
+    FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca),
+    FOREIGN KEY (id_data_comemorativa) REFERENCES data_comemorativa(id_data_comemorativa)
+);
+
+INSERT INTO usuario (nome, email, telefone, cpf, idade, sexo) VALUES
+('Ana Souza', 'ana.souza@email.com', '11999990000', '123.456.789-01', 8, 'Feminino'),
+('Carlos Lima', 'carlos.lima@email.com', '11988887777', '123.456.789-02', 15, 'Masculino'),
+('Mariana Rocha', 'mariana.rocha@email.com', '11977776666', '123.456.789-03', 22, 'Feminino'),
+('Bruno Santos', 'bruno.santos@email.com', '11966665555', '123.456.789-04', 35, 'Masculino'),
+('Fernanda Alves', 'fernanda.alves@email.com', '11955554444', '123.456.789-05', 42, 'Feminino'),
+('Ricardo Mendes', 'ricardo.mendes@email.com', '11944443333', '123.456.789-06', 60, 'Masculino'),
+('Juliana Costa', 'juliana.costa@email.com', '11933332222', '123.456.789-07', 12, 'Feminino'),
+('Eduardo Martins', 'eduardo.martins@email.com', '11922221111', '123.456.789-08', 29, 'Masculino'),
+('Patricia Silva', 'patricia.silva@email.com', '11911110000', '123.456.789-09', 6, 'Feminino'),
+('Roberto Nunes', 'roberto.nunes@email.com', '11900009999', '123.456.789-10', 33, 'Masculino'),
+('Carla Ferreira', 'carla.ferreira@email.com', '11899998888', '123.456.789-11', 48, 'Feminino'),
+('André Ribeiro', 'andre.ribeiro@email.com', '11888887777', '123.456.789-12', 16, 'Masculino'),
+('Tatiane Oliveira', 'tatiane.oliveira@email.com', '11877776666', '123.456.789-13', 24, 'Feminino'),
+('Lucas Rocha', 'lucas.rocha@email.com', '11866665555', '123.456.789-14', 5, 'Masculino'),
+('Aline Campos', 'aline.campos@email.com', '11855554444', '123.456.789-15', 70, 'Feminino'),
+('Felipe Souza', 'felipe.souza@email.com', '11844443333', '123.456.789-16', 30, 'Masculino'),
+('Isabela Mendes', 'isabela.mendes@email.com', '11833332222', '123.456.789-17', 28, 'Feminino'),
+('Gustavo Almeida', 'gustavo.almeida@email.com', '11822221111', '123.456.789-18', 14, 'Masculino'),
+('Natália Duarte', 'natalia.duarte@email.com', '11811110000', '123.456.789-19', 26, 'Feminino'),
+('Vinícius Barros', 'vinicius.barros@email.com', '11800009999', '123.456.789-20', 34, 'Masculino'),
+('Luana Martins', 'luana.martins@email.com', '11799998888', '123.456.789-21', 27, 'Feminino'),
+('Rafael Costa', 'rafael.costa@email.com', '11788887777', '123.456.789-22', 10, 'Masculino'),
+('Bianca Fernandes', 'bianca.fernandes@email.com', '11777776666', '123.456.789-23', 25, 'Feminino'),
+('Leandro Vasconcelos', 'leandro.vasconcelos@email.com', '11766665555', '123.456.789-24', 55, 'Masculino'),
+('Camila Ribeiro', 'camila.ribeiro@email.com', '11755554444', '123.456.789-25', 30, 'Feminino'),
+('Douglas Pereira', 'douglas.pereira@email.com', '11744443333', '123.456.789-26', 32, 'Masculino'),
+('Renata Azevedo', 'renata.azevedo@email.com', '11733332222', '123.456.789-27', 13, 'Feminino'),
+('Fábio Oliveira', 'fabio.oliveira@email.com', '11722221111', '123.456.789-28', 36, 'Masculino'),
+('Tatiane Gomes', 'tatiane.gomes@email.com', '11711110000', '123.456.789-29', 7, 'Feminino'),
+('Pedro Henrique', 'pedro.henrique@email.com', '11700009999', '123.456.789-30', 33, 'Masculino'),
+('Letícia Nogueira', 'leticia.nogueira@email.com', '11699998888', '123.456.789-31', 50, 'Feminino'),
+('Jonas Carvalho', 'jonas.carvalho@email.com', '11688887777', '123.456.789-32', 31, 'Masculino'),
+('Vanessa Lima', 'vanessa.lima@email.com', '11677776666', '123.456.789-33', 24, 'Feminino'),
+('Alexandre Batista', 'alexandre.batista@email.com', '11666665555', '123.456.789-34', 45, 'Masculino'),
+('Bruna Farias', 'bruna.farias@email.com', '11655554444', '123.456.789-35', 28, 'Feminino'),
+('Maurício Rocha', 'mauricio.rocha@email.com', '11644443333', '123.456.789-36', 9, 'Masculino'),
+('Débora Souza', 'debora.souza@email.com', '11633332222', '123.456.789-37', 26, 'Feminino'),
+('Thiago Almeida', 'thiago.almeida@email.com', '11622221111', '123.456.789-38', 32, 'Masculino'),
+('Simone Ribeiro', 'simone.ribeiro@email.com', '11611110000', '123.456.789-39', 60, 'Feminino'),
+('Rodrigo Mendes', 'rodrigo.mendes@email.com', '11600009999', '123.456.789-40', 34, 'Masculino');
+
+INSERT INTO padrinho (id_padrinho, renda_familiar) VALUES
+    (3, 5000.00), 
+    (4, 7000.00), 
+    (5, 6000.00), 
+    (6, 8000.00), 
+    (8, 7500.00), 
+    (10, 6500.00), 
+    (11, 7200.00), 
+    (13, 5000.00), 
+    (15, 9000.00), 
+    (16, 6800.00);
+
+INSERT INTO responsavel (id_responsavel, vinculo_crianca, renda_familiar) VALUES
+    (17, 'Mãe', 4500.00), 
+    (19, 'Pai', 5500.00), 
+    (20, 'Avó', 4000.00), 
+    (21, 'Tio', 4800.00), 
+    (23, 'Mãe', 5000.00), 
+    (24, 'Pai', 6000.00), 
+    (25, 'Mãe', 7500.00), 
+    (26, 'Pai', 6700.00), 
+    (28, 'Avô', 6200.00), 
+    (30, 'Mãe', 7100.00);
+
+INSERT INTO escola (nome, endereco, cnpj) VALUES
+('Escola Primária Alegria', 'Rua das Flores, 123', '12345678000101'),
+('Colégio Integração', 'Av. Central, 456', '22345678000102'),
+('Escola Nova Esperança', 'Rua da Paz, 789', '32345678000103'),
+('Instituto Saber', 'Praça das Árvores, 101', '42345678000104'),
+('Colégio Evolução', 'Alameda dos Estudantes, 202', '52345678000105');
+
+INSERT INTO crianca (id_crianca, id_responsavel, id_escola, brinquedo_1, brinquedo_2, brinquedo_3, matricula_escolar) VALUES
+(1, 17, 1, 'Boneca', 'Quebra-cabeça', 'Jogo da memória', 'MAT2024001'),
+(2, 19, 2, 'Carrinho', 'Bola', 'LEGO', 'MAT2024002'),
+(7, 21, 3, 'Urso de pelúcia', 'Livro infantil', 'Dominó', 'MAT2024003'),
+(9, 23, 4, 'Cubo mágico', 'Bicicleta', 'Jogo de tabuleiro', 'MAT2024004'),
+(14, 25, 5, 'Carrinho de controle remoto', 'Boneco de ação', 'Pista de corrida', 'MAT2024005'),
+(18, 28, 1, 'Jogo de cartas', 'Lego', 'Bola de futebol', 'MAT2024006'),
+(22, 30, 2, 'Quebra-cabeça', 'Jogo de xadrez', 'Patins', 'MAT2024007'),
+(27, 19, 3, 'Slime', 'Bola de basquete', 'Livro de colorir', 'MAT2024008'),
+(29, 17, 4, 'Boneca Barbie', 'Massinha', 'Corda de pular', 'MAT2024009'),
+(36, 23, 5, 'Pipa', 'Ferrorama', 'Patinete', 'MAT2024010');
+
+INSERT INTO data_comemorativa (nome, data) VALUES
+('Natal', '2025-12-25'),
+('Dia das Crianças', '2025-10-12'),
+('Páscoa', '2025-04-20'),
+('Dia dos Pais', '2025-08-10'),
+('Dia das Mães', '2025-05-11'),
+('Ano Novo', '2025-01-01'),
+('Dia do Professor', '2025-10-15'),
+('Independência do Brasil', '2025-09-07'),
+('Carnaval', '2025-02-25'),
+('Dia do Trabalho', '2025-05-01');
 
 
--- Insere dados fictícios na tabela Usuario
-INSERT INTO Usuario (nome, email, telefone, tipo_usuario) VALUES
-('Ana Silva', 'ana.silva@email.com', '(11) 91111-1111', 'padrinho'),
-('Bruno Oliveira', 'bruno.oliveira@email.com', '(21) 92222-2222', 'responsavel'),
-('Carla Santos', 'carla.santos@email.com', '(31) 93333-3333', 'administrador'),
-('Daniel Pereira', 'daniel.pereira@email.com', '(41) 94444-4444', 'outros'),
-('Eduarda Rodrigues', 'eduarda.rodrigues@email.com', '(51) 95555-5555', 'padrinho'),
-('Felipe Costa', 'felipe.costa@email.com', '(61) 96666-6666', 'responsavel'),
-('Gabriela Souza', 'gabriela.souza@email.com', '(71) 97777-7777', 'administrador'),
-('Henrique Almeida', 'henrique.almeida@email.com', '(81) 98888-8888', 'outros'),
-('Isabela Fernandes', 'isabela.fernandes@email.com', '(91) 99999-9999', 'padrinho'),
-('João Barbosa', 'joao.barbosa@email.com', '(12) 91010-1010', 'responsavel'),
-('Karina Ribeiro', 'karina.ribeiro@email.com', '(22) 91212-1212', 'administrador'),
-('Lucas Cavalcanti', 'lucas.cavalcanti@email.com', '(32) 91313-1313', 'outros'),
-('Manuela Dias', 'manuela.dias@email.com', '(42) 91414-1414', 'padrinho'),
-('Nathan Castro', 'nathan.castro@email.com', '(52) 91515-1515', 'responsavel'),
-('Olivia Gomes', 'olivia.gomes@email.com', '(62) 91616-1616', 'administrador'),
-('Pedro Martins', 'pedro.martins@email.com', '(72) 91717-1717', 'outros'),
-('Rafaela Rocha', 'rafaela.rocha@email.com', '(82) 91818-1818', 'padrinho'),
-('Samuel Correia', 'samuel.correia@email.com', '(92) 91919-1919', 'responsavel'),
-('Talita Cunha', 'talita.cunha@email.com', '(13) 92020-2020', 'administrador'),
-('Victor Barros', 'victor.barros@email.com', '(23) 92121-2121', 'outros'),
-('Yasmin Lima', 'yasmin.lima@email.com', '(33) 92222-2222', 'padrinho'),
-('André Melo', 'andre.melo@email.com', '(43) 92323-2323', 'responsavel'),
-('Beatriz Nogueira', 'beatriz.nogueira@email.com', '(53) 92424-2424', 'administrador'),
-('César Campos', 'cesar.campos@email.com', '(63) 92525-2525', 'outros'),
-('Débora Freitas', 'debora.freitas@email.com', '(73) 92626-2626', 'padrinho'),
-('Enzo Batista', 'enzo.batista@email.com', '(83) 92727-2727', 'responsavel'),
-('Fernanda Vieira', 'fernanda.vieira@email.com', '(93) 92828-2828', 'administrador'),
-('Gustavo Santana', 'gustavo.santana@email.com', '(14) 92929-2929', 'outros'),
-('Helena Cardoso', 'helena.cardoso@email.com', '(24) 93030-3030', 'padrinho'),
-('Ítalo Aragão', 'italo.aragao@email.com', '(34) 93131-3131', 'responsavel'),
-('Júlia Peixoto', 'julia.peixoto@email.com', '(44) 93232-3232', 'administrador'),
-('Kevin Siqueira', 'kevin.siqueira@email.com', '(54) 93333-3333', 'outros'),
-('Larissa Aguiar', 'larissa.aguiar@email.com', '(64) 93434-3434', 'padrinho'),
-('Matheus Dourado', 'matheus.dourado@email.com', '(74) 93535-3535', 'responsavel'),
-('Nicole Valente', 'nicole.valente@email.com', '(84) 93636-3636', 'administrador'),
-('Otávio Pires', 'otavio.pires@email.com', '(94) 93737-3737', 'outros'),
-('Patrícia Brandão', 'patricia.brandao@email.com', '(15) 93838-3838', 'padrinho'),
-('Ricardo Xavier', 'ricardo.xavier@email.com', '(25) 93939-3939', 'responsavel'),
-('Sofia Leal', 'sofia.leal@email.com', '(35) 94040-4040', 'administrador'),
-('Thiago Maia', 'thiago.maia@email.com', '(45) 94141-4141', 'outros'),
-('Valentina Nunes', 'valentina.nunes@email.com', '(55) 94242-4242', 'padrinho'),
-('Wagner Mourão', 'wagner.mourao@email.com', '(65) 94343-4343', 'responsavel'),
-('Xênia Viana', 'xenia.viana@email.com', '(75) 94444-4444', 'administrador'),
-('Yuri Gusmão', 'yuri.gusmao@email.com', '(85) 94545-4545', 'outros'),
-('Zara Lemos', 'zara.lemos@email.com', '(95) 94646-4646', 'padrinho'),
-('Alessandra Paiva', 'alessandra.paiva@email.com', '(16) 94747-4747', 'responsavel'),
-('Bernardo Rangel', 'bernardo.rangel@email.com', '(26) 94848-4848', 'administrador'),
-('Camila Porto', 'camila.porto@email.com', '(36) 94949-4949', 'outros'),
-('Diego Saraiva', 'diego.saraiva@email.com', '(46) 95050-5050', 'padrinho'),
-('Emanuelle Dantas', 'emanuelle.dantas@email.com', '(56) 95151-5151', 'responsavel'),
-('Fabrício Brito', 'fabricio.brito@email.com', '(66) 95252-5252', 'administrador'),
-('Giovanna Cunha', 'giovanna.cunha@email.com', '(76) 95353-5353', 'outros'),
-('Hugo Farias', 'hugo.farias@email.com', '(86) 95454-5454', 'padrinho');
-SELECT * FROM usuario;
-
--- Agrupa os usuarios a partir de seu tipo e diz a quantidade de cada tipo de usuario
-SELECT tipo_usuario, COUNT(tipo_usuario) AS quantidade_por_tipos_usuarios
-    FROM usuario GROUP BY tipo_usuario;
-
-INSERT INTO escola (nome, endereco, telefone, id_escola) VALUES
-('Escola A', 'Rua A, 123', '(11) 1111-1111', 1),
-('Escola B', 'Rua B, 456', '(22) 2222-2222', 2),
-('Escola C', 'Rua C, 789', '(33) 3333-3333', 3),
-('Escola D', 'Rua D, 012', '(44) 4444-4444', 4),
-('Escola E', 'Rua E, 345', '(55) 5555-5555', 5),
-('Escola F', 'Rua F, 678', '(66) 6666-6666', 6),
-('Escola G', 'Rua G, 901', '(77) 7777-7777', 7),
-('Escola H', 'Rua H, 234', '(88) 8888-8888', 8),
-('Escola I', 'Rua I, 567', '(99) 9999-9999', 9),
-('Escola J', 'Rua J, 890', '(10) 1010-1010', 10),
-('Escola K', 'Rua K, 234', '(11) 1111-1111', 11),
-('Escola L', 'Rua L, 567', '(12) 1212-1212', 12),
-('Escola M', 'Rua M, 890', '(13) 1313-1313', 13),
-('Escola N', 'Rua N, 234', '(14) 1414-1414', 14),
-('Escola O', 'Rua O, 567', '(15) 1515-1515', 15),
-('Escola P', 'Rua P, 890', '(16) 1616-1616', 16),
-('Escola Q', 'Rua Q, 234', '(17) 1717-1717', 17),
-('Escola R', 'Rua R, 567', '(18) 1818-1818', 18),
-('Escola S', 'Rua S, 890', '(19) 1919-1919', 19),
-('Escola T', 'Rua T, 234', '(20) 2020-2020', 20);
-
-INSERT INTO Padrinho (nome, email, telefone, id_padrinho) VALUES
-('Ana Silva', 'ana.silva@email.com', '(11) 91111-1111', 1),
-('Eduarda Rodrigues', 'eduarda.rodrigues@email.com', '(51) 95555-5555', 2),
-('Isabela Fernandes', 'isabela.fernandes@email.com', '(91) 99999-9999', 3),
-('Manuela Dias', 'manuela.dias@email.com', '(42) 91414-1414', 4),
-('Rafaela Rocha', 'rafaela.rocha@email.com', '(82) 91818-1818', 5),
-('Yasmin Lima', 'yasmin.lima@email.com', '(33) 92222-2222', 6),
-('Débora Freitas', 'debora.freitas@email.com', '(73) 92626-2626', 7),
-('Helena Cardoso', 'helena.cardoso@email.com', '(24) 93030-3030', 8),
-('Larissa Aguiar', 'larissa.aguiar@email.com', '(64) 93434-3434', 9),
-('Patrícia Brandão', 'patricia.brandao@email.com', '(15) 93838-3838', 10),
-('Valentina Nunes', 'valentina.nunes@email.com', '(55) 94242-4242', 11),
-('Diego Saraiva', 'diego.saraiva@email.com', '(46) 95050-5050', 12),
-('Hugo Farias', 'hugo.farias@email.com', '(86) 95454-5454', 13);
-
-INSERT INTO Responsavel (nome, cpf, telefone, id_responsavel) VALUES
-('Bruno Oliveira', '111.222.333-44', '(21) 92222-2222', 1),
-('Felipe Costa', '555.666.777-88', '(61) 96666-6666', 2),
-('João Barbosa', '999.000.111-22', '(12) 91010-1010', 3),
-('Nathan Castro', '333.444.555-66', '(52) 91515-1515', 4),
-('Samuel Correia', '777.888.999-00', '(92) 91919-1919', 5),
-('André Melo', '222.333.444-55', '(43) 92323-2323', 6),
-('Enzo Batista', '666.777.888-99', '(83) 92727-2727', 7),
-('Ítalo Aragão', '000.111.222-33', '(34) 93131-3131', 8),
-('Matheus Dourado', '444.555.666-77', '(74) 93535-3535', 9),
-('Ricardo Xavier', '888.999.000-11', '(25) 93939-3939', 10),
-('Wagner Mourão', '123.456.789-00', '(65) 94343-4343', 11),
-('Alessandra Paiva', '567.890.123-45', '(16) 94747-4747', 12),
-('Emanuelle Dantas', '901.234.567-89', '(56) 95151-5151', 13);
-
-ALTER TABLE Responsavel ADD COLUMN email VARCHAR(180) UNIQUE;
-
-UPDATE Responsavel SET email = 'bruno.oliveira@email.com' WHERE id_responsavel = 1;
-UPDATE Responsavel SET email = 'felipe.costa@email.com' WHERE id_responsavel = 2;
-UPDATE Responsavel SET email = 'joao.barbosa@email.com' WHERE id_responsavel = 3;
-UPDATE Responsavel SET email = 'nathan.castro@email.com' WHERE id_responsavel = 4;
-UPDATE Responsavel SET email = 'samuel.correia@email.com' WHERE id_responsavel = 5;
-UPDATE Responsavel SET email = 'andre.melo@email.com' WHERE id_responsavel = 6;
-UPDATE Responsavel SET email = 'enzo.batista@email.com' WHERE id_responsavel = 7;
-UPDATE Responsavel SET email = 'italo.aragao@email.com' WHERE id_responsavel = 8;
-UPDATE Responsavel SET email = 'matheus.dourado@email.com' WHERE id_responsavel = 9;
-UPDATE Responsavel SET email = 'ricardo.xavier@email.com' WHERE id_responsavel = 10;
-UPDATE Responsavel SET email = 'wagner.mourao@email.com' WHERE id_responsavel = 11;
-UPDATE Responsavel SET email = 'alessandra.paiva@email.com' WHERE id_responsavel = 12;
-UPDATE Responsavel SET email = 'emanuelle.dantas@email.com' WHERE id_responsavel = 13;
-
-UPDATE Usuario
-JOIN Responsavel ON Usuario.email = Responsavel.email
-SET Usuario.id_responsavel = Responsavel.id_responsavel
-WHERE Usuario.tipo_usuario = 'responsavel';
-
-SELECT Usuario.nome, Responsavel.telefone
-FROM Usuario
-JOIN Responsavel ON Usuario.id_responsavel = Responsavel.id_responsavel
-WHERE Usuario.tipo_usuario = 'responsavel';
-UPDATE Usuario
-JOIN Padrinho ON Usuario.email = Padrinho.email
-SET Usuario.id_padrinho = Padrinho.id_padrinho
-WHERE Usuario.tipo_usuario = 'padrinho';
--- Mostra nome e contato dos padrinhos
-SELECT Usuario.nome, Padrinho.telefone
-FROM Usuario
-JOIN Padrinho ON Usuario.id_padrinho = Padrinho.id_padrinho
-WHERE Usuario.tipo_usuario = 'padrinho';
- -- Listar o nome das crianças e seus respectivos padrinhos
- SELECT c.nome AS nome_crianca, p.nome AS nome_padrinho
-FROM  Crianca c
-JOIN Apadrinhamento a ON c.id_crianca = a.id_crianca
-JOIN Padrinho p ON a.id_padrinho = p.id_padrinho;
--- Listar o nome das crianças e suas respectivas escolas
-SELECT c.nome AS nome_crianca, e.nome AS nome_escola
-FROM Crianca c
-JOIN Escola e ON c.id_escola = e.id_escola;
--- Listar o nome de responsaveis e o número de crianças que cada um é responsavel
-SELECT r.nome AS nome_responsavel, COUNT(c.id_crianca) AS numero_criancas
-FROM Responsavel r
-LEFT JOIN Crianca c ON r.id_responsavel = c.id_responsavel
-GROUP BY r.nome; 
--- Listar o nome dos padrinhos e o número de crianças que cada um apadrinha
-SELECT p.nome AS nome_padrinho, COUNT(a.id_crianca) AS numero_criancas_apadrinhadas
-FROM Padrinho p
-LEFT JOIN Apadrinhamento a ON p.id_padrinho = a.id_padrinho
-GROUP BY p.nome;
-
--- Contar o número de crianças por escola
-SELECT E.nome AS NomeEscola, COUNT(C.id_crianca) AS NumeroDeCriancas
-FROM Escola E
-LEFT JOIN Crianca C ON E.id_escola = C.id_escola
-GROUP BY E.nome;
-
--- Listar todos os padrinhos que não apadrinharam crianças ainda
-SELECT P.nome AS NomePadrinho
-FROM Padrinho P
-LEFT JOIN Apadrinhamento A ON P.id_padrinho = A.id_padrinho
-WHERE A.id_padrinho IS NULL;
-
---Listar apadrinhamentos realizados em um determinado período
-SELECT A.id_apadrinhamento, C.nome AS NomeCrianca, P.nome AS NomePadrinho, A.data_apadrinhamento
-FROM Apadrinhamento A
-JOIN Crianca C ON A.id_crianca = C.id_crianca
-JOIN Padrinho P ON A.id_padrinho = P.id_padrinho
-WHERE A.data_apadrinhamento BETWEEN '2025-01-01' AND '2025-12-31';
-
-#Listar todos os usuários ordenados pelo nome
-SELECT * FROM Usuario ORDER BY nome;
-
-# Contar quantos usuarios existem por tipo
-
-SELECT tipo_usuario, COUNT(*) AS quantidade
-FROM Usuario
-GROUP BY tipo_usuario;
-
-#Buscar informaçoes sobre os padrinhos e das criançasque apadrinharam
-SELECT p.nome AS padrinho, c.nome AS crianca, a.data_apadrinhamento
-FROM Apadrinhamento a
-JOIN Padrinho p ON a.id_padrinho = p.id_padrinho
-JOIN Crianca c ON a.id_crianca = c.id_crianca
-ORDER BY a.data_apadrinhamento DESC;
-
-#Listar todas as crianças e as suas escolas
-SELECT c.nome AS crianca, e.nome AS escola
-FROM Crianca c
-LEFT JOIN Escola e ON c.id_escola = e.id_escola
-ORDER BY c.nome;
-
+-- Seleciona o nome do padrinho, email, telefone, idade, sexo e rendamiliar unindo com a tabela usuario
+SELECT padrinho.id_padrinho, usuario.nome, usuario.email, usuario.telefone, usuario.idade, usuario.sexo, padrinho.renda_familiar FROM padrinho
+    INNER JOIN usuario ON padrinho.id_padrinho = usuario.id_usuario;
 
