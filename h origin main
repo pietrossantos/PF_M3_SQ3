@@ -1,0 +1,50 @@
+[33mcommit 0498143edb77fe2a3000b15d81a76eccba9844a2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: GustavoAlves <gustavooficial2004@outlook.com>
+Date:   Mon Mar 10 12:04:12 2025 -0300
+
+    :sparkles: feat: adicionado 3 consultas
+
+[33mcommit 5d0ed7b6a68311129fbf910e81c8b048d1a67cca[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: AndreiMoreira7 <andreism1415@gmail.com>
+Date:   Sun Mar 9 22:52:30 2025 -0300
+
+    adição de mais 4 consultas
+
+[33mcommit 306fd1bbe2f20219ea993a9ffd814bdcf3ab7136[m
+Author: pietrossantos <=>
+Date:   Sun Mar 9 12:40:20 2025 -0300
+
+    :sparkles: feat: updates and improvements
+
+[33mcommit f195691244e14d0672d07d039755c6c7f2ea2f7c[m
+Merge: ec11444 11ec5b4
+Author: Matheus de Sá Aguiar <104742257+matheusdesaaguiar@users.noreply.github.com>
+Date:   Sat Mar 8 20:08:46 2025 -0300
+
+    Merge pull request #1 from pietrossantos/develop/matheus
+    
+    adicionando consulta sobre a quantidade de tipos de usuarios
+
+[33mcommit 11ec5b49d26d3420a92fb2e57acc6cf4c5e0184f[m[33m ([m[1;31morigin/develop/matheus[m[33m)[m
+Author: MatheusSA <matheusdesaaguiar@gmail.com>
+Date:   Sat Mar 8 19:19:08 2025 -0300
+
+    adicionando consulta sobre a quantidade de tipos de usuarios
+
+[33mcommit ec11444e739cdce09a73775bfa84cbd3467a7b32[m
+Author: pietrossantos <=>
+Date:   Fri Mar 7 14:59:09 2025 -0300
+
+    :sparkles: feat: update DB
+
+[33mcommit eebc3f960aa2d7a066dbf859357d6a13c9da0475[m
+Author: pietrossantos <=>
+Date:   Fri Mar 7 14:34:09 2025 -0300
+
+    :card_file_box: raw: new DB
+
+[33mcommit 3e8570e4d0e2911310a1b0dfba95819ddf1fd0de[m
+Author: pietrossantos <=>
+Date:   Fri Feb 21 10:32:35 2025 -0300
+
+    :tada: init: First Commit

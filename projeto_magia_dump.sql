@@ -17,7 +17,7 @@ CREATE TABLE usuario (
     sexo ENUM('Masculino', 'Feminino', 'Outro'),
     tipo_usuario ENUM('padrinho', 'responsavel', 'crianca', 'ADMIN') NOT NULL
 );
- 
+
 
 #-- Tabela padrinho: armazena informações dos padrinhos
 CREATE TABLE padrinho(
@@ -74,8 +74,6 @@ CREATE TABLE apadrinhamento (
     FOREIGN KEY (id_padrinho) REFERENCES padrinho(id_padrinho),
     FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca)
 );
-
-
 
 CREATE TABLE apadrinhamento_evento (
     id_apadrinhamento_evento INT PRIMARY KEY AUTO_INCREMENT,
@@ -242,6 +240,23 @@ FROM crianca
 INNER JOIN usuario ON crianca.id_crianca = usuario.id_usuario
 
 SELECT DISTINCT sexo, COUNT (sexo) as quantidade_sexo FROM usuario GROUP BY sexo;
+
+/*Crianças sem escola atribuída*/
+SELECT u.nome AS nome_crianca, c.brinquedo_1, c.brinquedo_2, c.brinquedo_3
+FROM crianca c
+JOIN usuario u ON c.id_crianca = u.id_usuario
+WHERE c.id_escola IS NULL;
+
+/*Padrinhos e suas motivações*/
+SELECT u.nome AS nome_padrinho, p.motivacao_padrinho
+FROM padrinho p
+JOIN usuario u ON p.id_padrinho = u.id_usuario;
+
+/*Padrinhos com renda familiar superior a R$7.000,00*/
+SELECT u.nome AS nome_padrinho, p.renda_familiar
+FROM padrinho p
+JOIN usuario u ON p.id_padrinho = u.id_usuario
+WHERE p.renda_familiar > 7000.00;
 
 SELECT DISTINCT vinculo_crianca AS responsavel, COUNT (vinculo_crianca) as quantidade_por_responsavel FROM responsavel GROUP BY vinculo_crianca;
 
