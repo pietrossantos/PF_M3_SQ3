@@ -225,3 +225,22 @@ SELECT usuario.nome, COUNT(crianca.id_crianca)
     INNER JOIN usuario ON responsavel.id_responsavel = usuario.id_usuario
     INNER JOIN crianca ON crianca.id_responsavel = responsavel.id_responsavel
     GROUP BY responsavel.id_responsavel;
+
+         SELECT * FROM Usuario ORDER BY nome;
+            SELECT tipo_usuario, COUNT(*) AS quantidade
+
+         FROM Usuario
+          GROUP BY tipo_usuario;
+
+#Buscar informaçoes sobre os padrinhos e das criançasque apadrinharam
+SELECT p.nome AS padrinho, c.nome AS crianca, a.data_apadrinhamento
+FROM Apadrinhamento a
+JOIN Padrinho p ON a.id_padrinho = p.id_padrinho
+JOIN Crianca c ON a.id_crianca = c.id_crianca
+ORDER BY a.data_apadrinhamento DESC;
+
+#Listar todas as crianças e as suas escolas
+SELECT c.nome AS crianca, e.nome AS escola
+FROM Crianca c
+LEFT JOIN Escola e ON c.id_escola = e.id_escola
+ORDER BY c.nome;
