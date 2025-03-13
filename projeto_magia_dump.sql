@@ -360,3 +360,31 @@ SELECT
 FROM padrinho p
 INNER JOIN usuario u ON p.id_padrinho = u.id_usuario
 GROUP BY u.sexo;
+-- crianças e seus responsaveis com detalhes 
+SELECT
+    c.id_crianca,
+    u_crianca.nome AS nome_crianca,
+    r.vinculo_crianca,
+    u_responsavel.nome AS nome_responsavel,
+    e.nome AS nome_escola
+FROM crianca c
+JOIN usuario u_crianca ON c.id_crianca = u_crianca.id_usuario
+JOIN responsavel r ON c.id_responsavel = r.id_responsavel
+JOIN  usuario u_responsavel ON r.id_responsavel = u_responsavel.id_usuario
+LEFT JOIN escola e ON c.id_escola = e.id_escola;
+-- eventos e a quantidade de crianças participantes
+SELECT
+    ev.descricao AS nome_evento,
+    COUNT(ae.id_crianca) AS quantidade_criancas_participantes
+FROM evento ev
+LEFT JOIN apadrinhamento_evento ae ON ev.id_evento = ae.id_evento
+GROUP BY  ev.descricao
+ORDER BY  quantidade_criancas_participantes DESC;
+-- crianças e seus brinquedos desejados
+SELECT
+    u.nome AS nome_crianca,
+    c.brinquedo_1,
+    c.brinquedo_2,
+    c.brinquedo_3
+FROM crianca c
+JOIN usuario u ON c.id_crianca = u.id_usuario;
