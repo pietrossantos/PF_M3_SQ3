@@ -123,7 +123,16 @@ INSERT INTO usuario (nome, email, telefone, cpf, idade, sexo, tipo_usuario) VALU
 ('Débora Souza', 'debora.souza@email.com', '11633332222', '123.456.789-37', 26, 'Feminino', 'responsavel'),
 ('Thiago Almeida', 'thiago.almeida@email.com', '11622221111', '123.456.789-38', 32, 'Masculino', 'responsavel'),
 ('Simone Ribeiro', 'simone.ribeiro@email.com', '11611110000', '123.456.789-39', 60, 'Feminino', 'responsavel'),
-('Rodrigo Mendes', 'rodrigo.mendes@email.com', '11600009999', '123.456.789-40', 34, 'Masculino', 'responsavel');
+('Rodrigo Mendes', 'rodrigo.mendes@email.com', '11600009999', '123.456.789-40', 34, 'Masculino', 'responsavel'),
+('Nycolas Roger', 'nycolas.roger@email.com', '11980009999', '123.456.654-77', 30, 'Masculino', 'padrinho'),
+('Matheus Aguiar', 'matheus.aguiar@email.com', '11970039869', '567.987.654-79', 29, 'Masculino', 'padrinho'),
+('Ana Laura', 'ana.laura@email.com', '11981149642', '142.455.912-65', 23, 'Feminino', 'padrinho'),
+('Carlos Gabriel', 'carlos.gabriel@email.com', '11935791475', '836.947.904-55', 50, 'Masculino', 'padrinho'),
+('Vanessa Rodrigues', 'vanessa.rodrigues@email.com', '11926850106', '856.901.672.41', 27, 'Feminino', 'padrinho'),
+('Maria Heloisa', 'maria.heloisa@email.com', '11985867214', '890.432.176-90', 24, 'Feminino', 'padrinho'),
+('Joao Cleber', 'joao.cleber@email.com', '11971416579', '900.765.821-11', 26, 'Masculino', 'padrinho'),
+('Rosalinda soares', 'rosa.linda@email.com', '11983569135', '965.692.973-70', 24, 'Feminino', 'padrinho'),
+('Michele Fernandes', 'michele.fernandes@email.com', '11972784908', '132.555.973-65', 28, 'Feminino', 'padrinho');
 
 INSERT INTO padrinho (id_padrinho, renda_familiar) VALUES
     (3, 5000.00), 
@@ -135,7 +144,17 @@ INSERT INTO padrinho (id_padrinho, renda_familiar) VALUES
     (11, 7200.00), 
     (13, 5000.00), 
     (15, 9000.00), 
-    (16, 6800.00);
+    (16, 6800.00),
+    (16, 6800.00),
+    (51, 4000.00),
+    (52, 3800.00),
+    (53, 3900.00),
+    (54, 4300.00),
+    (55, 3700.00),
+    (56, 3800.00),
+    (57, 3850.00),
+    (58, 4500.00),
+    (59, 3900.00);
 
 INSERT INTO responsavel (id_responsavel, vinculo_crianca, renda_familiar) VALUES
     (17, 'Mãe', 4500.00), 
@@ -227,7 +246,7 @@ SELECT usuario.nome, COUNT(crianca.id_crianca)
          FROM Usuario
           GROUP BY tipo_usuario;
 
-/*#Buscar informaçoes sobre os padrinhos e das crianças que apadrinharam*/
+#Buscar informaçoes sobre os padrinhos e das crianças que apadrinharam
 SELECT p.nome AS padrinho, c.nome AS crianca, a.data_apadrinhamento
 FROM Apadrinhamento AS a
 JOIN Padrinho AS p ON a.id_padrinho = p.id_padrinho
@@ -240,20 +259,55 @@ INNER JOIN crianca ON crianca.id_crianca = usuario.id_usuario
 LEFT JOIN escola ON crianca.id_escola = escola.id_escola
 ORDER BY usuario.nome ASC;
 
-/*Crianças sem escola atribuída*/
+--Crianças sem escola atribuída
 SELECT u.nome AS nome_crianca, c.brinquedo_1, c.brinquedo_2, c.brinquedo_3
 FROM crianca c
 JOIN usuario u ON c.id_crianca = u.id_usuario
 WHERE c.id_escola IS NULL;
 
-/*Padrinhos e suas motivações*/
+--Padrinhos e suas motivações*/
 SELECT u.nome AS nome_padrinho, p.motivacao_padrinho
 FROM padrinho p
 JOIN usuario u ON p.id_padrinho = u.id_usuario;
 
-/*Padrinhos com renda familiar superior a R$7.000,00*/
+--Padrinhos com renda familiar superior a R$7.000,00
 SELECT u.nome AS nome_padrinho, p.renda_familiar
 FROM padrinho p
 JOIN usuario u ON p.id_padrinho = u.id_usuario
 WHERE p.renda_familiar > 7000.00;
 
+-- faixetaria dos padrinhos e a quantidade de padrinhos que tem essa idade
+SELECT faixetaria,COUNT(faixetaria) AS quantidade_padrinho
+    FROM (SELECT padrinho.id_padrinho, usuario.nome, usuario.idade, 
+    CASE 
+        WHEN usuario.idade BETWEEN 18 AND 25  THEN 'Entre 18 e 25'
+        WHEN usuario.idade BETWEEN 25 AND 40 THEN 'Entre 25 e 40'
+        WHEN usuario.idade BETWEEN 40 AND 50 THEN 'Entre 40 e 50'
+        WHEN usuario.idade > 50 THEN 'mais que 50'
+    END AS faixetaria
+    FROM padrinho
+    INNER JOIN usuario ON usuario.id_usuario = padrinho.id_padrinho) as tabela_faixetaria
+    GROUP BY tabela_faixetaria.faixetaria;
+
+--faixa de renda de padrinho e a quantidade de padrinhos que tem essa faixa de renda
+SELECT faixa_renda_padrinho, COUNT(faixa_renda_padrinho) as quantidade_padrinhos
+    FROM (SELECT padrinho.id_padrinho, usuario.nome, padrinho.renda_familiar,
+    CASE 
+        WHEN padrinho.renda_familiar BETWEEN 0 AND 1000 THEN 'Entre 0 e 1000'
+        WHEN padrinho.renda_familiar BETWEEN 1000 AND 2000 THEN 'Entre 1000 e 2000'
+        WHEN padrinho.renda_familiar BETWEEN 2000 AND 3000 THEN 'Entre 2000 e 3000'
+        WHEN padrinho.renda_familiar BETWEEN 3000 AND 4000 THEN 'Entre 3000 e 4000'
+        WHEN padrinho.renda_familiar BETWEEN 4000 AND 5000 THEN 'Entre 4000 e 5000'
+        WHEN padrinho.renda_familiar BETWEEN 5000 AND 6000 THEN 'Entre 5000 e 6000'
+        WHEN padrinho.renda_familiar > 6000 THEN 'Acima de 6000'
+    END AS faixa_renda_padrinho
+    FROM padrinho 
+    INNER JOIN usuario ON usuario.id_usuario = padrinho.id_padrinho) AS renda_padrino
+    GROUP BY faixa_renda_padrinho;
+
+-- as datas de apadrinhamento e a quantiadade de crianca que foia apadrinhada nessa data
+SELECT DATE_FORMAT(data_apadrinhamento, '%Y-%m') AS mes_apadrinhamento, 
+       COUNT(*) AS total_crianca
+FROM apadrinhamento
+GROUP BY mes_apadrinhamento
+ORDER BY mes_apadrinhamento;
