@@ -246,6 +246,7 @@ SELECT usuario.nome, COUNT(crianca.id_crianca)
          FROM Usuario
           GROUP BY tipo_usuario;
 
+/*#Buscar informaçoes sobre os padrinhos e das crianças que apadrinharam*/
 #Buscar informaçoes sobre os padrinhos e das crianças que apadrinharam
 SELECT p.nome AS padrinho, c.nome AS crianca, a.data_apadrinhamento
 FROM Apadrinhamento AS a
@@ -255,9 +256,15 @@ ORDER BY a.data_apadrinhamento DESC;
 
 SELECT usuario.nome, escola.nome
 FROM crianca
-INNER JOIN crianca ON crianca.id_crianca = usuario.id_usuario
+INNER JOIN usuario ON crianca.id_crianca = usuario.id_usuario
 LEFT JOIN escola ON crianca.id_escola = escola.id_escola
 ORDER BY usuario.nome ASC;
+
+select usuario.nome, crianca.id_crianca
+FROM crianca
+INNER JOIN usuario ON crianca.id_crianca = usuario.id_usuario
+
+SELECT DISTINCT sexo, COUNT (sexo) as quantidade_sexo FROM usuario GROUP BY sexo;
 
 --Crianças sem escola atribuída
 SELECT u.nome AS nome_crianca, c.brinquedo_1, c.brinquedo_2, c.brinquedo_3
@@ -311,3 +318,45 @@ SELECT DATE_FORMAT(data_apadrinhamento, '%Y-%m') AS mes_apadrinhamento,
 FROM apadrinhamento
 GROUP BY mes_apadrinhamento
 ORDER BY mes_apadrinhamento;
+SELECT DISTINCT vinculo_crianca AS responsavel, COUNT (vinculo_crianca) as quantidade_por_responsavel FROM responsavel GROUP BY vinculo_crianca;
+
+SELECT usuario.nome, COUNT(crianca.id_crianca) FROM responsavel INNER JOIN usuario ON responsavel.id_responsavel = usuario.id_usuario INNER JOIN crianca ON crianca.id_responsavel = responsavel.id_responsavel GROUP BY responsavel.id_responsavel;
+
+SELECT 
+    c.id_crianca AS id_crianca,
+    u.nome AS nome_crianca,
+    r.vinculo_crianca AS responsavel,
+    e.nome AS escola
+FROM crianca c
+INNER JOIN usuario u ON c.id_crianca = u.id_usuario
+INNER JOIN responsavel r ON c.id_responsavel = r.id_responsavel
+LEFT JOIN escola e ON c.id_escola = e.id_escola;
+
+SELECT 
+    p.id_padrinho,
+    u.nome AS nome_padrinho,
+    COUNT(a.id_apadrinhamento) AS total_apadrinhamentos
+FROM padrinho p
+INNER JOIN usuario u ON p.id_padrinho = u.id_usuario
+LEFT JOIN apadrinhamento a ON p.id_padrinho = a.id_padrinho
+GROUP BY p.id_padrinho
+ORDER BY total_apadrinhamentos DESC;
+
+SELECT 
+    ev.descricao AS evento,
+    ev.data_comemorativa,
+    up.nome AS padrinho,
+    uc.nome AS crianca
+FROM apadrinhamento_evento ae
+INNER JOIN evento ev ON ae.id_evento = ev.id_evento
+INNER JOIN apadrinhamento a ON ae.id_apadrinhamento = a.id_apadrinhamento
+INNER JOIN usuario up ON a.id_padrinho = up.id_usuario
+INNER JOIN usuario uc ON a.id_crianca = uc.id_usuario
+WHERE ev.data_comemorativa > CURDATE();
+
+SELECT 
+    u.sexo,
+    AVG(p.renda_familiar) AS media_renda
+FROM padrinho p
+INNER JOIN usuario u ON p.id_padrinho = u.id_usuario
+GROUP BY u.sexo;
