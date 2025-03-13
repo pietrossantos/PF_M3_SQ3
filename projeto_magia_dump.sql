@@ -17,7 +17,7 @@ CREATE TABLE usuario (
     sexo ENUM('Masculino', 'Feminino', 'Outro'),
     tipo_usuario ENUM('padrinho', 'responsavel', 'crianca', 'ADMIN') NOT NULL
 );
-
+ 
 
 #-- Tabela padrinho: armazena informações dos padrinhos
 CREATE TABLE padrinho(
@@ -70,12 +70,12 @@ CREATE TABLE apadrinhamento (
     id_apadrinhamento INT PRIMARY KEY AUTO_INCREMENT,
     id_padrinho INT NOT NULL,
     id_crianca INT NOT NULL,
-    id_evento INT NOT NULL,
     data_apadrinhamento DATETIME NOT NULL,
     FOREIGN KEY (id_padrinho) REFERENCES padrinho(id_padrinho),
-    FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca),
-    FOREIGN KEY (id_evento) REFERENCES evento(id_evento)
+    FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca)
 );
+
+
 
 CREATE TABLE apadrinhamento_evento (
     id_apadrinhamento_evento INT PRIMARY KEY AUTO_INCREMENT,
@@ -182,17 +182,17 @@ INSERT INTO evento (descricao, data_comemorativa, endereco, cep) VALUES
 ('Apresentação de coral natalino', '2025-12-25', 'Rua da Música, 606', '60606-707'),
 ('Piquenique do Dia das Crianças', '2025-10-12', 'Parque Central, 707', '70707-808');
 
-INSERT INTO apadrinhamento (id_padrinho, id_crianca, id_evento, data_apadrinhamento) VALUES
-(3, 1, 1, '2024-12-25 10:00:00'),
-(4, 2, 2, '2024-10-12 15:00:00'),
-(5, 7, 3, '2024-04-20 11:30:00'),
-(6, 9, 4, '2024-02-25 14:00:00'),
-(8, 14, 1, '2024-12-25 16:00:00'),
-(10, 18, 2, '2024-10-12 09:00:00'),
-(11, 22, 3, '2024-04-20 13:00:00'),
-(13, 27, 4, '2024-02-25 17:00:00'),
-(15, 29, 1, '2024-12-25 12:00:00'),
-(16, 36, 2, '2024-10-12 18:00:00');
+INSERT INTO apadrinhamento (id_padrinho, id_crianca, data_apadrinhamento) VALUES
+(3, 1, '2024-12-25 10:00:00'),
+(4, 2, '2024-10-12 15:00:00'),
+(5, 7, '2024-04-20 11:30:00'),
+(6, 9, '2024-02-25 14:00:00'),
+(8, 14, '2024-12-25 16:00:00'),
+(10, 18, '2024-10-12 09:00:00'),
+(11, 22, '2024-04-20 13:00:00'),
+(13, 27, '2024-02-25 17:00:00'),
+(15, 29, '2024-12-25 12:00:00'),
+(16, 36, '2024-10-12 18:00:00');
 
 INSERT INTO apadrinhamento_evento (id_apadrinhamento, id_evento) VALUES
 (1, 1),
@@ -208,9 +208,6 @@ INSERT INTO apadrinhamento_evento (id_apadrinhamento, id_evento) VALUES
 
 
 #-- COMEÇANDO AS CONSULTAS
-USE projetomagia
-
-SELECT * FROM apadrinhamento_evento
 
 SELECT DISTINCT sexo, COUNT (sexo) as quantidade_sexo
     FROM usuario
@@ -232,15 +229,18 @@ SELECT usuario.nome, COUNT(crianca.id_crianca)
          FROM Usuario
           GROUP BY tipo_usuario;
 
-#Buscar informaçoes sobre os padrinhos e das criançasque apadrinharam
+/*#Buscar informaçoes sobre os padrinhos e das crianças que apadrinharam*/
 SELECT p.nome AS padrinho, c.nome AS crianca, a.data_apadrinhamento
-FROM Apadrinhamento a
-JOIN Padrinho p ON a.id_padrinho = p.id_padrinho
-JOIN Crianca c ON a.id_crianca = c.id_crianca
+FROM Apadrinhamento AS a
+JOIN Padrinho AS p ON a.id_padrinho = p.id_padrinho
+JOIN crianca AS c ON a.id_crianca = c.id_crianca
 ORDER BY a.data_apadrinhamento DESC;
 
-#Listar todas as crianças e as suas escolas
-SELECT c.nome AS crianca, e.nome AS escola
-FROM Crianca c
-LEFT JOIN Escola e ON c.id_escola = e.id_escola
-ORDER BY c.nome;
+SELECT usuario.nome, escola.nome
+FROM crianca
+INNER JOIN crianca ON crianca.id_crianca = usuario.id_usuario
+LEFT JOIN escola ON crianca.id_escola = escola.id_escola
+ORDER BY usuario.nome ASC;
+
+
+
