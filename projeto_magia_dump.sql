@@ -17,7 +17,7 @@ CREATE TABLE usuario (
     sexo ENUM('Masculino', 'Feminino', 'Outro'),
     tipo_usuario ENUM('padrinho', 'responsavel', 'crianca', 'ADMIN') NOT NULL
 );
- 
+
 
 #-- Tabela padrinho: armazena informações dos padrinhos
 CREATE TABLE padrinho(
@@ -74,8 +74,6 @@ CREATE TABLE apadrinhamento (
     FOREIGN KEY (id_padrinho) REFERENCES padrinho(id_padrinho),
     FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca)
 );
-
-
 
 CREATE TABLE apadrinhamento_evento (
     id_apadrinhamento_evento INT PRIMARY KEY AUTO_INCREMENT,
