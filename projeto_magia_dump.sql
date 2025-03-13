@@ -212,6 +212,3 @@ USE projetomagia
 
 SELECT * FROM apadrinhamento_evento
 
-DROP DATABASE projetomagia
-
-DROP DATABASE projetomagia
