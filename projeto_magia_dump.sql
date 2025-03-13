@@ -12,25 +12,25 @@ CREATE TABLE usuario (
     nome VARCHAR(200) NOT NULL,
     email VARCHAR(255) UNIQUE,
     telefone VARCHAR(15),
-    cpf VARCHAR(14) NOT NULL,
-    idade INTEGER,
-    sexo VARCHAR(15)
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    idade INT CHECK (idade >= 0),
+    sexo ENUM('Masculino', 'Feminino')
 );
 
 
 --Tabela padrinho: armazena informações dos padrinhos
 CREATE TABLE padrinho(
     id_padrinho INT PRIMARY KEY,
-    renda_familiar DECIMAL(10,2),
-    FOREIGN KEY (id_padrinho) REFERENCES usuario(id_usuario)
+    renda_familiar DECIMAL(10,2) CHECK (renda_familiar >= 0),
+    FOREIGN KEY (id_padrinho) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
 --Tabela responsavel: armazena informações dos responsaveis
 CREATE TABLE responsavel (
     id_responsavel INT PRIMARY KEY,
     vinculo_crianca VARCHAR(50),
-    renda_familiar decimal(10,2),
-    FOREIGN KEY (id_responsavel) REFERENCES usuario(id_usuario)
+    renda_familiar DECIMAL(10,2) CHECK (renda_familiar >= 0),
+    FOREIGN KEY (id_responsavel) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
 --Tabela escola: armazena informações das escolas
@@ -38,7 +38,7 @@ CREATE TABLE escola (
     id_escola INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
     endereco VARCHAR(255),
-    cnpj VARCHAR(14) NOT NULL
+    cnpj VARCHAR(14) UNIQUE NOT NULL
 );
 
 --Tabela crianca: armazena informações das criancas
@@ -50,9 +50,9 @@ CREATE TABLE crianca(
     brinquedo_2 VARCHAR(100),
     brinquedo_3 VARCHAR(100),
     matricula_escolar VARCHAR(32),
-    FOREIGN KEY (id_crianca) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_responsavel) REFERENCES responsavel(id_responsavel),
-    FOREIGN KEY (id_escola) REFERENCES escola(id_escola)
+    FOREIGN KEY (id_crianca) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_responsavel) REFERENCES responsavel(id_responsavel) ON DELETE CASCADE,
+    FOREIGN KEY (id_escola) REFERENCES escola(id_escola) ON DELETE SET NULL
 );
 
 --Tabela data_comemorativa: armazena informações das datas comemorativas
@@ -69,9 +69,9 @@ CREATE TABLE apadrinhamento (
     id_crianca INT NOT NULL,
     id_data_comemorativa INT NOT NULL,
     data_apadrinhamento DATETIME NOT NULL,
-    FOREIGN KEY (id_padrinho) REFERENCES padrinho(id_padrinho),
-    FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca),
-    FOREIGN KEY (id_data_comemorativa) REFERENCES data_comemorativa(id_data_comemorativa)
+    FOREIGN KEY (id_padrinho) REFERENCES padrinho(id_padrinho) ON DELETE CASCADE,
+    FOREIGN KEY (id_crianca) REFERENCES crianca(id_crianca) ON DELETE CASCADE,
+    FOREIGN KEY (id_data_comemorativa) REFERENCES data_comemorativa(id_data_comemorativa) ON DELETE CASCADE
 );
 
 INSERT INTO usuario (nome, email, telefone, cpf, idade, sexo) VALUES
