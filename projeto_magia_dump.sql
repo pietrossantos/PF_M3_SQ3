@@ -212,3 +212,16 @@ USE projetomagia
 
 SELECT * FROM apadrinhamento_evento
 
+SELECT DISTINCT sexo, COUNT (sexo) as quantidade_sexo
+    FROM usuario
+    GROUP BY sexo;
+
+SELECT DISTINCT vinculo_crianca AS responsavel, COUNT (vinculo_crianca) as quantidade_por_responsavel
+    FROM responsavel
+    GROUP BY vinculo_crianca;
+
+SELECT usuario.nome, COUNT(crianca.id_crianca)
+    FROM responsavel
+    INNER JOIN usuario ON responsavel.id_responsavel = usuario.id_usuario
+    INNER JOIN crianca ON crianca.id_responsavel = responsavel.id_responsavel
+    GROUP BY responsavel.id_responsavel;
