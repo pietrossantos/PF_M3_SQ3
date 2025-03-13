@@ -195,16 +195,23 @@ INSERT INTO apadrinhamento (id_padrinho, id_crianca, id_evento, data_apadrinhame
 (16, 36, 2, '2024-10-12 18:00:00');
 
 INSERT INTO apadrinhamento_evento (id_apadrinhamento, id_evento) VALUES
-(11, 1),
-(12, 2),
-(13, 3),
-(14, 4),
-(15, 5),
-(16, 6),
-(17, 7),
-(18, 8),
-(19, 9),
-(20, 10);
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+(8, 8),
+(9, 9),
+(10, 10);
 
 
 #-- COMEÇANDO AS CONSULTAS
+USE projetomagia
+
+SELECT * FROM apadrinhamento_evento
+
+DROP DATABASE projetomagia
+
+DROP DATABASE projetomagia
