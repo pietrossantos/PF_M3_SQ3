@@ -242,5 +242,20 @@ INNER JOIN crianca ON crianca.id_crianca = usuario.id_usuario
 LEFT JOIN escola ON crianca.id_escola = escola.id_escola
 ORDER BY usuario.nome ASC;
 
+/*Crianças sem escola atribuída*/
+SELECT u.nome AS nome_crianca, c.brinquedo_1, c.brinquedo_2, c.brinquedo_3
+FROM crianca c
+JOIN usuario u ON c.id_crianca = u.id_usuario
+WHERE c.id_escola IS NULL;
 
+/*Padrinhos e suas motivações*/
+SELECT u.nome AS nome_padrinho, p.motivacao_padrinho
+FROM padrinho p
+JOIN usuario u ON p.id_padrinho = u.id_usuario;
+
+/*Padrinhos com renda familiar superior a R$7.000,00*/
+SELECT u.nome AS nome_padrinho, p.renda_familiar
+FROM padrinho p
+JOIN usuario u ON p.id_padrinho = u.id_usuario
+WHERE p.renda_familiar > 7000.00;
 
